@@ -26,15 +26,20 @@ const Modal = React.createClass({
   },
 
   componentDidMount: function () {
-    if (typeof this.props.init != 'undefined') {
-      if (this.props.init === false) {
+    const init = this.props.init;
+    const options = this.props.options;
+    if (typeof init != 'undefined') {
+      if (init === false) {
         return;
       }
-
-      if (this.props.init === true) {
+      if (init === true) {
         $(ReactDOM.findDOMNode(this)).modal();
       } else {
-        $(ReactDOM.findDOMNode(this)).modal(this.props.init);
+        if (options) {
+          $(ReactDOM.findDOMNode(this)).modal(options).modal(init);
+        } else {
+          $(ReactDOM.findDOMNode(this)).modal(init);
+        }
       }
     }
   }
