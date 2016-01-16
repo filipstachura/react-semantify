@@ -1,6 +1,6 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Semantify = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 /*!
-  Copyright (c) 2015 Jed Watson.
+  Copyright (c) 2016 Jed Watson.
   Licensed under the MIT License (MIT), see
   http://jedwatson.github.io/classnames
 */
@@ -12,7 +12,7 @@
 	var hasOwn = {}.hasOwnProperty;
 
 	function classNames () {
-		var classes = '';
+		var classes = [];
 
 		for (var i = 0; i < arguments.length; i++) {
 			var arg = arguments[i];
@@ -21,26 +21,26 @@
 			var argType = typeof arg;
 
 			if (argType === 'string' || argType === 'number') {
-				classes += ' ' + arg;
+				classes.push(arg);
 			} else if (Array.isArray(arg)) {
-				classes += ' ' + classNames.apply(null, arg);
+				classes.push(classNames.apply(null, arg));
 			} else if (argType === 'object') {
 				for (var key in arg) {
 					if (hasOwn.call(arg, key) && arg[key]) {
-						classes += ' ' + key;
+						classes.push(key);
 					}
 				}
 			}
 		}
 
-		return classes.substr(1);
+		return classes.join(' ');
 	}
 
 	if (typeof module !== 'undefined' && module.exports) {
 		module.exports = classNames;
 	} else if (typeof define === 'function' && typeof define.amd === 'object' && define.amd) {
 		// register as 'classnames', consistent with npm package name
-		define('classnames', function () {
+		define('classnames', [], function () {
 			return classNames;
 		});
 	} else {
@@ -1892,6 +1892,8 @@ exports.Statistic = _statistic2.default;
 },{"./collections/breadcrumb":2,"./collections/form":3,"./collections/grid":4,"./collections/menu":5,"./collections/message":6,"./collections/table":7,"./commons/column":8,"./commons/content":9,"./commons/field":10,"./commons/fields":11,"./commons/row":12,"./commons/section":13,"./commons/text":14,"./commons/title":15,"./elements/button":17,"./elements/divider":18,"./elements/flag":19,"./elements/header":20,"./elements/icon":21,"./elements/image":22,"./elements/input":23,"./elements/label":24,"./elements/list":25,"./elements/loader":26,"./elements/rail":27,"./elements/reveal":28,"./elements/segment":29,"./elements/step":30,"./elements/steps":31,"./modules/accordion":37,"./modules/checkbox":38,"./modules/dimmer":39,"./modules/dropdown":40,"./modules/modal":41,"./modules/popup":42,"./modules/progress":43,"./modules/rating":44,"./modules/search":45,"./modules/shape":46,"./modules/sidebar":47,"./modules/sticky":48,"./modules/tab":49,"./views/advertisement":50,"./views/card":51,"./views/comment":52,"./views/comments":53,"./views/feed":54,"./views/item":55,"./views/items":56,"./views/statistic":57}],33:[function(require,module,exports){
 'use strict';
 
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -1905,8 +1907,6 @@ var _classnames = require('classnames');
 var _classnames2 = _interopRequireDefault(_classnames);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
 
 exports.default = {
 
@@ -2462,15 +2462,20 @@ var Modal = _react2.default.createClass({
   },
 
   componentDidMount: function componentDidMount() {
-    if (typeof this.props.init != 'undefined') {
-      if (this.props.init === false) {
+    var init = this.props.init;
+    var options = this.props.options;
+    if (typeof init != 'undefined') {
+      if (init === false) {
         return;
       }
-
-      if (this.props.init === true) {
+      if (init === true) {
         $(_reactDom2.default.findDOMNode(this)).modal();
       } else {
-        $(_reactDom2.default.findDOMNode(this)).modal(this.props.init);
+        if (options) {
+          $(_reactDom2.default.findDOMNode(this)).modal(options).modal(init);
+        } else {
+          $(_reactDom2.default.findDOMNode(this)).modal(init);
+        }
       }
     }
   }
